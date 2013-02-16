@@ -11,12 +11,21 @@
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
 \ProvidesPackage{pseudocode}
+
 
 \RequirePackage{graphics} % needed for \scalebox command
 \RequirePackage{xparse}   % needed for \Function command
 
 
+%%%%%%%%%%%%%%%%%%%%%%%
+% Formatting commands %
+%%%%%%%%%%%%%%%%%%%%%%%
+
+
+% Tiny space
+\newcommand{\tsp}{\hspace*{0.5pt}}
 
 % Command for typesetting constants
 \newcommand{\const}[1]{\textnormal{\scshape#1}} %  \const{true}, \const{nil}
@@ -38,116 +47,17 @@
 % Command for typesetting subarray ranges.
 \newcommand{\twodots}{\mathinner{\ldotp\ldotp}} %  $[1 \twodots n]$
 
+% Command for typesetting object attributes.
+\newcommand{\member}[2]{\id{#1}\ensuremath{\tsp . \tsp}\id{#2}} %  \member{user}{name}
 
-% Commands for typesetting object attributes.  All of these commands
-% may be used either in or out of math mode.
-
-% Definitions:
-% An i-string is a string that you would use in an \id command,
-%   typically one or more non-Greek letters, numerals, or dashes.
-% An x-string is a string that you would not use in an \id command,
-%   typically because it has a subscript or one or more Greek letters.
-% A single non-Greek letter can be either an i-string or an x-string.
-
-% Most of the time, we use the \attrib command, which assumes that its
-% first argument, the object name, is an x-string and its second
-% argument, the attribute name, is an i-string.  Examples of the
-% \attrib command: \attrib{A}{length}, \attrib{x}{next},
-% \attrib{\rho}{next-item}.  \attrib is just a direct call to the
-% \attribxi macro.
-
-% The four macros \attribxi, \attribxx, \attribix, and \attribii each
-% take two arguments.  The two letters at the end of the macro name
-% determine, in order, how each argument is treated.  x indicates that
-% the argument should be an x-string, and i indicates that the
-% argument should be an i-string.
-
-% Because we use a single letter to indicate most objects and a string
-% of one or more letters to indicate most attribute names, \attribxi
-% is the most common macro we use.  That's why \attrib is just a
-% direct call to \attribxi.
-
-% Use \attribxx when the object name is an x-string and the object
-% name is also an x-string, for example, when the attribute name has a
-% subscript: \attribxx{x}{c_i} or \attrib{x}{\id{key}_i}.  Another
-% time you would use \attribxx is when the attribute name is a Greek
-% letter: \attrib{v}{\pi}.
-
-% When the object name has more than one letter, it is usually an
-% i-string.  In this case, use \attribii or \attribix, depending on
-% the attribute name: \attribii{item}{key}, \attribii{prev-item}{np},
-% \attribix{item}{\pi}.
-
-% The \attribb, \attribbb, \attribbbb, and \attribbxxi macros are for
-% cascading attributes.  They just call the appropriate \attribxi and
-% \attribxx commands.  For one level of cascading, use \attribb:
-% \attribb{x}{left}{size}.  For two levels, use \attribbb:
-% \attribbb{y}{p}{left}{size}.  For three levels, use \attribbbb (but
-% no examples in the book use this macro).  The \attribbxxi macro is
-% for one level of cascading where the first attribute given is an
-% x-string: \attribbxxi{x}{c_i}{n}.
-
-% When the object is an edge of a graph, specified by two vertices,
-% use \attribe or \attribex: \attribe{u}{v}{f}, \attribex{u}{v}{c'}.
-
-\newcommand{\attribxi}[2]{\ensuremath{#1.\hspace*{1pt}\id{#2}}}
-\newcommand{\attribxx}[2]{\ensuremath{#1.\hspace*{1pt}#2}}
-\newcommand{\attribix}[2]{\ensuremath{\id{#1}\hspace*{1pt}.#2}}
-\newcommand{\attribii}[2]{\ensuremath{\id{#1}\hspace*{1pt}.\hspace*{1pt}\id{#2}}}
-\newcommand{\attrib}[2]{\attribxi{#1}{#2}}
-\newcommand{\attribe}[3]{\attribxi{(#1,#2)}{#3}}
-\newcommand{\attribex}[3]{\attribxx{(#1,#2)}{#3}}
-\newcommand{\attribb}[3]{\attribxi{\attribxi{#1}{#2}}{#3}}
-\newcommand{\attribbb}[4]{\attribxi{\attribb{#1}{#2}{#3}}{#4}}
-\newcommand{\attribbbb}[5]{\attribxi{\attribbb{#1}{#2}{#3}{#4}}{#5}}
-\newcommand{\attribbxxi}[3]{\attribxi{\attribxx{#1}{#2}}{#3}}
+% Command for typesetting array elements.
+\newcommand{\at}[2]{\id{#1}\tsp[\id{#2}]} %  \at{names}{pos}
 
 
-% The codelinenumber counter counts the current line number.
-\newcounter{codelinenumber}
+%%%%%%%%%%%%%%%%%%%%%%%
+% codebox environment %
+%%%%%%%%%%%%%%%%%%%%%%%
 
-% The indent counter keeps track of the current indentation level.
-\newcounter{indent}
-
-% The \iffirstcodeline command tells us whether we are about to
-% produce the first line other than the procedure declaration.
-\newif\iffirstcodeline\firstcodelinetrue
-
-% The \zeroli command makes it so that we're about to produce the
-% first line other than the procedure declaration.
-\newcommand{\zeroli}{\setcounter{codelinenumber}{0}%
-\setcounter{indent}{0}%
-\firstcodelinetrue}
-
-% \digitwidth gives the width of a single digit.  All digits are the
-% same width.  We'll need this amount to do the right thing for line
-% numbers.
-\newlength{\digitwidth}
-\settowidth{\digitwidth}{0}
-
-% The \li command bumps the counter, outputs it, and skips some space
-% A \label cmd for a given numbered line is allowed to appear after the
-% \\, as in
-%	\li $x\gets y$  \label{li:assign-x}
-% But if \li merely set \@currentlabel in the usual way via
-% \refstepcounter, the value of \@currentlabel does not persist outside
-% the current cell.  Solution: use an additional, global variable
-% \@lilabel.
-
-% THC: This next command is magic to me.  I didn't write it.
-\def\@startline{\global\@curtabmar\@nxttabmar\relax
-   \global\@curtab\@curtabmar\setbox\@curline\hbox
-    {}\@startfield\strut}
-
-% \code@init is run at the beginning of a codebox environment.
-\def\code@init{%
-  \zeroli%						  producing the first line
-  \setlength{\tabbingsep}{1em}%   distance between numbers and code
-  % Initialize \@lilabel to allow a pageref \label cmd at the beginning
-  % of the codebox
-  \global\let\@lilabel\@currentlabel
-  \def\@currentlabel{\@lilabel}%
-}
 
 % When we make a codebox, we save the code part into a box before
 % printing it.  We do not actually print the code until we know how many
@@ -156,7 +66,17 @@
 
 % The \ifprocname command tells us whether this procedure has been
 % given a name yet.
-\newif\ifprocname\procnamefalse
+\newif\ifprocname
+
+% The \iffirstcodeline command tells us whether we are about to
+% produce the first line other than the procedure declaration.
+\newif\iffirstcodeline
+
+% \digitwidth gives the width of a single digit.  All digits are the
+% same width.  We'll need this amount to do the right thing for line
+% numbers.
+\newlength{\digitwidth}
+\settowidth{\digitwidth}{0}
 
 % Assume that the width of the codebox is the width of the text, minus
 % the width of 2 digits.  We'll correct for that later.
@@ -164,15 +84,36 @@
 \setlength{\codeboxwidth}{\linewidth} % Thanks, David Etherington!
 \addtolength{\codeboxwidth}{-2\digitwidth}
 
+% The codelinenumber counter counts the current line number.
+\newcounter{codelinenumber}
+
+% The indent counter keeps track of the current indentation level.
+\newcounter{indent}
+
+% THC: This next command is magic to me.  I didn't write it.
+\def\@startline{\global\@curtabmar\@nxttabmar\relax
+   \global\@curtab\@curtabmar\setbox\@curline\hbox
+    {}\@startfield\strut}
+
 % The "codebox" environment produces an unbreakable section of code
 \newenvironment{codebox}{%
-    \global\procnamefalse%              this proc hasn't been given a name yet
-    \code@init%                         set up for first line
-    %
-    \begin{lrbox}{\savecode}%           save the code into a box
-    \begin{minipage}[t]{\codeboxwidth}% it'll be a minipage
-    %
-    \def\codeindent{\textbf{else} }%    set up the tab stops
+    % this proc hasn't been given a name yet
+    \global\procnamefalse%
+    % producing the first line
+    \setcounter{codelinenumber}{0}%
+    \setcounter{indent}{0}%
+    \firstcodelinetrue%
+    % distance between numbers and code
+    \setlength{\tabbingsep}{1em}%
+    % Initialize \@lilabel to allow a pageref \label cmd at the beginning of the codebox
+    \global\let\@lilabel\@currentlabel
+    \def\@currentlabel{\@lilabel}%
+    % save the code into a box
+    \begin{lrbox}{\savecode}%
+    % it'll be a minipage
+    \begin{minipage}[t]{\codeboxwidth}%
+    % set up the tab stops
+    \def\codeindent{\textbf{else} }%
     \begin{tabbing}%
     99\=\codeindent\=\codeindent\=\codeindent\=\codeindent\=\codeindent\=\codeindent\=\codeindent\=codeindent\=codeindent\=\+\kill%
 }{%
@@ -180,30 +121,33 @@
     % making sure that we have ended at indent level 0.  Otherwise, print a
     % warning.
     \ifnum\value{indent}=0\else\typeout{Warning: Indentation ends at level \theindent\space in codebox on page \thepage.}\fi%
-    %
+    % close all open environments
     \end{tabbing}%
     \end{minipage}%
     \end{lrbox}%
-    %
-    \addtolength{\topsep}{0.5ex}%       for the following trivlist
+    % for the following trivlist
+    \addtolength{\topsep}{0.5ex}%
     \begin{trivlist}\item\parindent=0pt%
         % If there was a procedure name given, print it now but with a little
         % space below, and disallow a page break after the procedure name.
         \@nobreaktrue%
-        \ifprocname\saveprocname\rule[-1.25ex]{0pt}{0pt}\\ \fi%
+        \ifprocname\saveprocname\rule[-2ex]{0pt}{0pt}\\ \fi%
         % Put in the right amount of space, depending on whether we reached
         % double digits in the line numbers.
         \ifnum\value{codelinenumber}>9\hspace*{2\digitwidth}\else\hspace*{1\digitwidth}\fi%
         % Now print the code
         \usebox{\savecode}%
     \end{trivlist}%
-    \addtolength{\topsep}{-0.5ex}\global\procnamefalse%
+    \addtolength{\topsep}{-0.5ex}%
 }
 
-% Use the \Procname macro to give the name of the procedure.
-\newcommand{\Procname}[1]{\global\def\saveprocname{#1}\global\procnametrue}
 
-\newcounter{thisindent}			% counter for recursive indenting code
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% codebox environment commands %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\newcounter{thisindent}         % counter for recursive indenting code
 \newcommand{\Indent}{\setcounter{thisindent}{\value{indent}}\putindents}
 % \putindents is a recursive macro that indents a number of times given
 % by the counter thisindent.
@@ -296,16 +240,14 @@
 \newcommand{\putfakeindents}{\ifnum\value{thisindent}>0\textbf{else }\addtocounter{thisindent}{-1}\putfakeindents\fi}
 
 
-\newcommand{\tsp}{\:\!} % tiny space
-\newcommand{\partype}[1]{\text{\tsp:\;#1}} % function parameter type
-
 \ExplSyntaxOn
 
 \NewDocumentCommand{\Function}{ m g } {
-    \Procname{$
+    \global\def\saveprocname{
         \proc{#1}
-        \IfNoValueF{#2} {(\ArgList{#2})}
-    $}
+        \IfNoValueF{#2} { \tsp ( \ArgList{#2} ) }
+    }
+    \global\procnametrue
 }
 
 \newif\iffirstarg
@@ -321,8 +263,8 @@
 
 \NewDocumentCommand{\AArg}{ m m } {
     \iffirstarg\global\firstargfalse\else{,\ }\fi
-    #1
-    \IfNoValueF{#2} {\partype{#2}}
+    \hspace*{-1pt} \id{#1}
+    \IfNoValueF{#2} {\tsp : \; #2}
 }
 
 \ExplSyntaxOff

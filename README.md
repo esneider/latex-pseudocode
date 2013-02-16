@@ -26,59 +26,81 @@ Documentation
 -------------
 
 
-Each pseudocode function is typeset within a codebox environment,
+Each pseudocode process is typeset within a codebox environment,
 ```tex
     \begin{codebox}...\end{codebox}.
 ```
 
+### Process name
+
 
 Normally, the first line within the codebox environment is a
-`\Function` command (optional). The first argument is the function name, and the
+`\Process` command (optional). The first argument is the process name, and the
 optional second argument is a comma separated list of parameters, each
 optionally with a description of the parameter (after an equal sign).
 Example:
 ```tex
-    \Function{Dijkstra}{G = graph, s = vertex}
+    \Process{Dijkstra}{G = graph, s = vertex}
 ```
 
+### Format commands
 
-To typeset the name of a function in small caps, use the `\proc` command:
+
+To typeset the name of a function in small caps, use:
 ```tex
-    \proc{Matrix-Multiply}
+    \proc{Insertion-Sort}
 ```
 
 
-To typeset the name of a constant in small caps, use the `\const` command:
+To typeset the name of a constant in small caps, use:
 ```tex
-    \const{nil}
+    \const{true}, \const{nil}
 ```
 
 
-To typeset the name of an identifier in regular italics, use the `\id` command:
+To typeset the name of an identifier in regular italics, use:
 ```tex
-    \id{rank}
+    \id{key}, \id{left-sum}
 ```
 
 
-To typeset the name of a fixed function in roman, use the `\func` command:
+To typeset the name of a fixed function in roman, use:
 ```tex
-    \func{sin}
+    \func{sin}, \func{out-degree}
 ```
 
 
-The `\proc`, `\const`, `\id`, and `\func` commands not only use the correct
-font, they also perform the important service of interpreting a dash
-as a hyphen, rather than as a minus sign.  These commands may be used
-either in or out of math mode.
+To typeset an object attribute, use:
+```tex
+    \member{user}{name}
+```
 
 
-For attributes, use the various forms of the `\attrib` commands.
+To typeset array elements, use:
+```tex
+    \at{names}{pos}
+```
 
 
-Other than the `\Function` line, all lines begin with either `\li` (for a
-numbered line) or `\zi` (for an unnumbered line).  The following
-commands are provided for typesetting keywords and handling automatic
-indentation:
+All these commands not only use the correct font, they also perform the
+important service of interpreting a dash as a hyphen, rather than as a
+minus sign. These commands may be used either in or out of math mode.
+
+
+To typeset subarray ranges, use:
+```tex
+    $[1 \twodots n]$
+```
+
+
+### Line numbering
+
+
+Other than the `\Function` line, all lines begin with either `\li` (for
+a numbered line) or `\zi` (for an unnumbered line).
+
+The following commands are provided for typesetting keywords and
+handling automatic indentation:
 
 + Loops: `\For`, `\To`, `\By`, `\Downto`, `\Do`, `\While`, `\Repeat`, `\Until`
 + Selection: `\If`, `\Then`, `\Else`, `\ElseIf`, `\ElseNoIf`
@@ -92,22 +114,19 @@ indentation:
 codebox resolve to the number of the most recent numbered line.
 
 
-`\twodots` produces the `..` notation used for subarrays.
-
-
 Code for the example
 --------------------
 
 ```tex
 \begin{codebox}
-    \Function{Dijkstra}{G = graph, s = vertex}
+    \Process{Dijkstra}{G = graph, s = vertex}
 
     \li \For each vertex $v \in \id{V_G}$
     \li \Do
-            $\id{dist}[v] \gets \infty$
-    \li     $\id{parent}[v] \gets \const{NIL}$
+            $\at{dist}{v} \gets \infty$
+    \li     $\at{parent}{v} \gets \const{NIL}$
         \End
-    \li $\id{dist}[s] \gets 0$
+    \li $\at{dist}{s} \gets 0$
 
     \liempty
 
@@ -119,10 +138,10 @@ Code for the example
 
     \li     \For each edge $e = (u,v)$
     \li     \Do
-                \If $\id{dist}[v] > \id{dist}[u] + \id{weight}[e]$
+                \If $\at{dist}{v} > \at{dist}{u} + \at{weight}{e}$
     \li         \Then
-                    $\id{dist}[v] \gets \id{dist}[u] + \id{weight}[e]$
-    \li             $\id{parent}[v] \gets u$
+                    $\at{dist}{v} \gets \at{dist}{u} + \at{weight}{e}$
+    \li             $\at{parent}{v} \gets u$
                 \End
             \End
         \End
@@ -132,7 +151,7 @@ Code for the example
         $H \gets (\id{V_G, \emptyset})$
     \li \For each vertex $v \in \id{V_G},\ v \neq s$
     \li \Do
-            $\id{E_H} \gets \id{E_H} \cup \{(\id{parent}[v], v)\}$
+            $\id{E_H} \gets \id{E_H} \cup \{(\at{parent}{v}, v)\}$
         \End
 
     \liempty
@@ -140,3 +159,4 @@ Code for the example
         \Return $H, \id{dist}$
 \end{codebox}
 ```
+
