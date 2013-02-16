@@ -9,6 +9,12 @@ Based on package _clrscode3e_, written by Thomas H. Cormen:
 [See more](http://www.cs.dartmouth.edu/~thc/clrscode/)
 
 
+Example
+-------
+
+![Latex render](https://github.com/esneider/latex-pseudocode/raw/master/images/Dijkstra.png "Pseudocode for Dijkstra's algorithm")
+
+
 Limitation
 ----------
 
@@ -19,67 +25,78 @@ numbered lines of code.
 Documentation
 -------------
 
+
 Each pseudocode function is typeset within a codebox environment,
 ```tex
-  \begin{codebox}...\end{codebox}.
+    \begin{codebox}...\end{codebox}.
 ```
 
 
 Normally, the first line within the codebox environment is a
-`\Function` command. The first argument is the function name, and the
+`\Function` command (optional). The first argument is the function name, and the
 optional second argument is a comma separated list of parameters, each
 optionally with a description of the parameter (after an equal sign).
 Example:
 ```tex
-  \Function{Dijkstra}{G = graph, s = vertex}
+    \Function{Dijkstra}{G = graph, s = vertex}
 ```
-The `\Function` command is optional.
 
 
-To typeset the name of a function in small caps, use the \proc command:
-  \proc{Matrix-Multiply}
+To typeset the name of a function in small caps, use the `\proc` command:
+```tex
+    \proc{Matrix-Multiply}
+```
 
-To typeset the name of a constant (e.g., nil) in small caps, use the
-\const command:
-  \const{nil}
 
-To typeset the name of an identifier (e.g., rank) in regular italics,
-use the \id command:
-  \id{rank}
+To typeset the name of a constant in small caps, use the `\const` command:
+```tex
+    \const{nil}
+```
 
-To typeset the name of a fixed function (e.g., sin) in roman, use the
-\func command:
-  \func{sin}
-(Note that several fixed functions, like sin, are already built into
-LaTeX.)
 
-The \proc, \const, \id, and \func commands not only use the correct
+To typeset the name of an identifier in regular italics, use the `\id` command:
+```tex
+    \id{rank}
+```
+
+
+To typeset the name of a fixed function in roman, use the `\func` command:
+```tex
+    \func{sin}
+```
+
+
+The `\proc`, `\const`, `\id`, and `\func` commands not only use the correct
 font, they also perform the important service of interpreting a dash
 as a hyphen, rather than as a minus sign.  These commands may be used
 either in or out of math mode.
 
-For attributes, use the various forms of the \attrib commands.
 
-Other than the \Procname line, all lines begin with either \li (for a
-numbered line) or \zi (for an unnumbered line).  The following
+For attributes, use the various forms of the `\attrib` commands.
+
+
+Other than the `\Function` line, all lines begin with either `\li` (for a
+numbered line) or `\zi` (for an unnumbered line).  The following
 commands are provided for typesetting keywords and handling automatic
 indentation:
 
-Loops: \For, \To, \By, \Downto, \Do, \While, \Repeat, \Until
-Selection: \If, \Then, \Else, \ElseIf, \ElseNoIf
-Jumps: \Return, \Error, \Goto
-Multithreading: \Spawn, \Sync, \Parfor
-Comments: \Comment, \RComment, \CommentSymbol
-Indentation: \Indentmore, \Startalign, \Stopalign
++ Loops: `\For`, `\To`, `\By`, `\Downto`, `\Do`, `\While`, `\Repeat`, `\Until`
++ Selection: `\If`, `\Then`, `\Else`, `\ElseIf`, `\ElseNoIf`
++ Jumps: `\Return`, `\Error`, `\Goto`
++ Multithreading: `\Spawn`, `\Sync`, `\Parfor`
++ Comments: `\Comment`, `\RComment`, `\CommentSymbol`
++ Indentation: `\Indentmore`, `\Startalign`, `\Stopalign`
 
-\label commands appearing in or after the first numbered line in a
+
+`\label` commands appearing in or after the first numbered line in a
 codebox resolve to the number of the most recent numbered line.
 
-\twodots produces the ".." notation used for subarrays.
+
+`\twodots` produces the `..` notation used for subarrays.
 
 
-Example
--------
+Code for the example
+--------------------
 
 ```tex
 \begin{codebox}
@@ -123,8 +140,3 @@ Example
         \Return $H, \id{dist}$
 \end{codebox}
 ```
-
-Will produce:
-
-![Latex render](https://github.com/esneider/latex-pseudocode/raw/master/images/Dijkstra.png "Pseudocode for Dijkstra's algorithm")
-
