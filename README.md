@@ -1,26 +1,29 @@
 latex-pseudocode
 ================
 
-Based on package `clrscode3e`, written by Thomas H. Cormen:
+Based on package _clrscode3e_, written by Thomas H. Cormen:
 
-Package for producing pseudocode in the style of Cormen, Leiserson,
-Rivest, and Stein, Introduction to Algorithms, Third edition.
+> Package for producing pseudocode in the style of Cormen, Leiserson,
+> Rivest, and Stein, Introduction to Algorithms, Third edition.
 
 [See more](http://www.cs.dartmouth.edu/~thc/clrscode/)
 
-LIMITATION
+
+Limitation
 ----------
 
 This package works only if each procedure has at most 99
 numbered lines of code.
 
-DOCUMENTATION
+
+Documentation
 -------------
 
 Each pseudocode function is typeset within a codebox environment,
 ```tex
   \begin{codebox}...\end{codebox}.
 ```
+
 
 Normally, the first line within the codebox environment is a
 `\Function` command. The first argument is the function name, and the
@@ -31,6 +34,7 @@ Example:
   \Function{Dijkstra}{G = graph, s = vertex}
 ```
 The `\Function` command is optional.
+
 
 To typeset the name of a function in small caps, use the \proc command:
   \proc{Matrix-Multiply}
@@ -73,7 +77,8 @@ codebox resolve to the number of the most recent numbered line.
 
 \twodots produces the ".." notation used for subarrays.
 
-EXAMPLE
+
+Example
 -------
 
 ```tex
