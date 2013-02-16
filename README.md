@@ -119,7 +119,7 @@ Code for the example
 
 ```tex
 \begin{codebox}
-    \Process{Dijkstra}{G = graph, s = vertex}
+    \Procedure{Dijkstra}{G = graph, s = vertex}
 
     \li \For each vertex $v \in \id{V_G}$
     \li \Do
