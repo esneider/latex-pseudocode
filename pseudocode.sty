@@ -1,25 +1,37 @@
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%
+% pseudocode.sty %
+%%%%%%%%%%%%%%%%%%
 
-% clrscode3e.sty
+% Based on package `clrscode3e', written by Thomas H. Cormen:
 
 % Package for producing pseudocode in the style of Cormen, Leiserson,
 % Rivest, and Stein, Introduction to Algorithms, Third edition.
 
-% LIMITATION: This package works only if each procedure has at most 99
+% http://www.cs.dartmouth.edu/~thc/clrscode/
+
+%%%%%%%%%%%%%%
+% LIMITATION %
+%%%%%%%%%%%%%%
+
+% This package works only if each procedure has at most 99
 % numbered lines of code.
 
-% Each pseudocode procedure is typeset within a codebox environment,
+%%%%%%%%%%%%%%%%%
+% DOCUMENTATION %
+%%%%%%%%%%%%%%%%%
+
+% Each pseudocode function is typeset within a codebox environment,
 %   \begin{codebox}...\end{codebox}.
 
-% Normally, the first line within the codebox environment is a \Procname
-% command.  The argument of the \Procname command is a math-mode
-% expression consisting of the procedure name and its parameters.  The
-% name of the procedure itself goes within a \proc command.  Example:
-%   \Procname{$\proc{Matrix-Multiply}(A,B)$}
-% The \Procname command is optional.
+% Normally, the first line within the codebox environment is a \Function
+% command. The first argument is the function name, and the optional
+% second argument is a comma separated list of parameters, each
+% optionally with a description of the parameter (after an equal sign).
+% Example:
+%   \Function{Dijkstra}{G = graph, s = vertex}
+% The \Function command is optional.
 
-% To typeset the name of a procedure (e.g., Matrix-Multiply) in small
-% caps, use the \proc command:
+% To typeset the name of a function in small caps, use the \proc command:
 %   \proc{Matrix-Multiply}
 
 % To typeset the name of a constant (e.g., nil) in small caps, use the
@@ -60,19 +72,56 @@
 
 % \twodots produces the ".." notation used for subarrays.
 
-% Written for general distribution by Thomas H. Cormen, March 2009.
+%%%%%%%%%%%
+% EXAMPLE %
+%%%%%%%%%%%
 
-% The author grants permission for anyone to use this macro package and
-% to distribute it unchanged without further restriction.  If you choose
-% to modify this package, you must indicate that you have modified it
-% prior to your distributing it.  I don't want to get bug reports about
-% changes that *you* have made!
+% \begin{codebox}
+%     \Function{Dijkstra}{G = graph, s = vertex}
+%
+%     \li \For each vertex $v \in \id{V_G}$
+%     \li \Do
+%             $\id{dist}[v] \gets \infty$
+%     \li     $\id{parent}[v] \gets \const{NIL}$
+%         \End
+%     \li $\id{dist}[s] \gets 0$
+%
+%     \liempty
+%
+%         $Q \gets \id{V_G}$
+%
+%     \li \While $Q \neq \emptyset$
+%     \li \Do
+%             $u \gets \proc{Extract-Min}(Q)$
+%
+%     \li     \For each edge $e = (u,v)$
+%     \li     \Do
+%                 \If $\id{dist}[v] > \id{dist}[u] + \id{weight}[e]$
+%     \li         \Then
+%                     $\id{dist}[v] \gets \id{dist}[u] + \id{weight}[e]$
+%     \li             $\id{parent}[v] \gets u$
+%                 \End
+%             \End
+%         \End
+%
+%     \liempty
+%
+%         $H \gets (\id{V_G, \emptyset})$
+%     \li \For each vertex $v \in \id{V_G},\ v \neq s$
+%     \li \Do
+%             $\id{E_H} \gets \id{E_H} \cup \{(\id{parent}[v], v)\}$
+%         \End
+%
+%     \liempty
+%
+%         \Return $H, \id{dist}$
+% \end{codebox}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\ProvidesPackage{clrscode3e}
+\ProvidesPackage{pseudocode}
 
-\RequirePackage{graphics}	% needed for \scalebox command
+\RequirePackage{graphics} % needed for \scalebox command
 \RequirePackage{xparse}   % needed for \Function command
 
 
