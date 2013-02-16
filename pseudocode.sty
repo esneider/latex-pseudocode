@@ -242,7 +242,7 @@
 
 \ExplSyntaxOn
 
-\NewDocumentCommand{\Function}{ m g } {
+\NewDocumentCommand{\Process}{ m g } {
     \global\def\saveprocname{
         \proc{#1}
         \IfNoValueF{#2} { \tsp ( \ArgList{#2} ) }
