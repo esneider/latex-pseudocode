@@ -15,32 +15,25 @@ Example
 ![Latex render](https://github.com/esneider/latex-pseudocode/raw/master/images/Dijkstra.png "Pseudocode for Dijkstra's algorithm")
 
 
-Limitation
-----------
-
-This package works only if each procedure has at most 99
-numbered lines of code.
-
-
 Documentation
 -------------
 
 
-Each pseudocode process is typeset within a codebox environment,
+Each pseudocode procedure is typeset within a codebox environment,
 ```tex
     \begin{codebox}...\end{codebox}.
 ```
 
-### Process name
+### Procedure name
 
 
-Normally, the first line within the codebox environment is a
-`\Process` command (optional). The first argument is the process name, and the
+Normally, the first line within the codebox environment is a `\Procedure`
+command (optional). The first argument is the procedure name, and the
 optional second argument is a comma separated list of parameters, each
 optionally with a description of the parameter (after an equal sign).
 Example:
 ```tex
-    \Process{Dijkstra}{G = graph, s = vertex}
+    \Procedure{Dijkstra}, \Procedure{Dijkstra}{G, s}, \Procedure{Dijkstra}{G = graph, s = vertex}
 ```
 
 ### Format commands
@@ -48,7 +41,7 @@ Example:
 
 To typeset the name of a function in small caps, use:
 ```tex
-    \proc{Insertion-Sort}
+    \proc{Insertion-Sort}{Vec} % same as \Procedure
 ```
 
 
@@ -66,7 +59,7 @@ To typeset the name of an identifier in regular italics, use:
 
 To typeset the name of a fixed function in roman, use:
 ```tex
-    \func{sin}, \func{out-degree}
+    \func{sin}{x}, \func{out-degree}{} % same as \Procedure
 ```
 
 
@@ -82,9 +75,9 @@ To typeset array elements, use:
 ```
 
 
-All these commands not only use the correct font, they also perform the
-important service of interpreting a dash as a hyphen, rather than as a
-minus sign. These commands may be used either in or out of math mode.
+All these commands not only use the correct font, but they also perform
+the important service of interpreting a dash as a hyphen, rather than as
+a minus sign. These commands may be used either in or out of math mode.
 
 
 To typeset subarray ranges, use:
@@ -114,6 +107,13 @@ handling automatic indentation:
 codebox resolve to the number of the most recent numbered line.
 
 
+Limitation
+----------
+
+This package works only if each procedure has at most 99
+numbered lines of code.
+
+
 Code for the example
 --------------------
 
@@ -134,7 +134,7 @@ Code for the example
 
     \li \While $Q \neq \emptyset$
     \li \Do
-            $u \gets \proc{Extract-Min}(Q)$
+            $u \gets \proc{Extract-Min}{Q}$
 
     \li     \For each edge $e = (u,v)$
     \li     \Do

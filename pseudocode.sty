@@ -16,7 +16,58 @@
 
 
 \RequirePackage{graphics} % needed for \scalebox command
-\RequirePackage{xparse}   % needed for \Function command
+\RequirePackage{xparse}   % needed for \proc command
+
+
+%%%%%%%%%%%%%%%%%%%
+% Helper commands %
+%%%%%%%%%%%%%%%%%%%
+
+
+% Tiny space
+\newcommand{\tsp}{\hspace*{0.5pt}}
+
+% Force hyphens
+\newcommand{\text@hyphens}{\mathcode`\-=`\-\relax}
+
+\ExplSyntaxOn
+
+% Command for typesetting procedures/functions
+\NewDocumentCommand{\call}{ m g } { %  \call{Insertion-Sort}, \call{Dijkstra}{G, s}, \call{Dijkstra}{G = graph, s = vertex}
+    #1
+    \IfNoValueF{#2} { \tsp ( \ArgList{#2} ) }
+}
+
+% Is first call argument
+\newif\iffirstarg
+
+% Parse argument list
+\NewDocumentCommand{\ArgList}{ >{\SplitList{,}} m } {
+    \global\firstargtrue
+    \ProcessList{#1}{\Arg}
+}
+
+% Parse argument
+\NewDocumentCommand{\Arg}{ >{\SplitArgument{1}{=}} m } {
+    \AArg #1
+}
+
+% Process argument
+\NewDocumentCommand{\AArg}{ m m } {
+    \iffirstarg\global\firstargfalse\else{,\ }\fi
+    \IfNoValueF{#2} {\hspace*{-1pt}}
+    \id{#1}
+    \IfNoValueF{#2} {\tsp : \; #2}
+}
+
+\ExplSyntaxOff
+
+% \proc command helper
+\newcommand{\@proc}[1]{\textnormal{\scshape#1}}
+
+% \func command helper
+\newcommand{\@func}[1]{%
+    \ensuremath{{\mathop{\text@hyphens\operator@font#1}\nolimits}}}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%
@@ -24,21 +75,8 @@
 %%%%%%%%%%%%%%%%%%%%%%%
 
 
-% Tiny space
-\newcommand{\tsp}{\hspace*{0.5pt}}
-
 % Command for typesetting constants
 \newcommand{\const}[1]{\textnormal{\scshape#1}} %  \const{true}, \const{nil}
-
-% Command for typesetting procedure names
-\newcommand{\proc}[1]{\textnormal{\scshape#1}} %  \proc{Insertion-Sort}
-
-
-\newcommand{\text@hyphens}{\mathcode`\-=`\-\relax}
-
-% Command for typesetting fixed functions
-\newcommand{\func}[1]{%
-    \ensuremath{{\mathop{\text@hyphens\operator@font#1}\nolimits}}} %  \func{sin}, \func{out-degree}
 
 % Command for typesetting identifiers
 \newcommand{\id}[1]{%
@@ -52,6 +90,20 @@
 
 % Command for typesetting array elements.
 \newcommand{\at}[2]{\id{#1}\tsp[\id{#2}]} %  \at{names}{pos}
+
+\ExplSyntaxOn
+
+% Command for typesetting procedures
+\NewDocumentCommand{\proc}{ m g } { %  \proc{Insertion-Sort}, \proc{Dijkstra}{G, s}, \proc{Dijkstra}{G = graph, s = vertex}
+    \call{\@proc{#1}}{#2}
+}
+
+% Command for typesetting fixed functions
+\NewDocumentCommand{\func}{ m g } { %  \func{sin}{x}, \func{out-degree}{G, v}
+    \call{\@func{#1}}{#2}
+}
+
+\ExplSyntaxOff
 
 
 %%%%%%%%%%%%%%%%%%%%%%%
@@ -147,6 +199,18 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
+\ExplSyntaxOn
+
+% Procedure name
+\NewDocumentCommand{\Procedure}{ m g } {
+    \global\def\saveprocname{\proc{#1}{#2}}
+    \global\procnametrue
+}
+
+\ExplSyntaxOff
+
+
+
 \newcounter{thisindent}         % counter for recursive indenting code
 \newcommand{\Indent}{\setcounter{thisindent}{\value{indent}}\putindents}
 % \putindents is a recursive macro that indents a number of times given
@@ -238,36 +302,6 @@
 \newcommand{\Stopalign}{\poptabs}
 \newcommand{\FakeIndent}{\setcounter{thisindent}{\value{indent}}\putfakeindents}
 \newcommand{\putfakeindents}{\ifnum\value{thisindent}>0\textbf{else }\addtocounter{thisindent}{-1}\putfakeindents\fi}
-
-
-\ExplSyntaxOn
-
-\NewDocumentCommand{\Process}{ m g } {
-    \global\def\saveprocname{
-        \proc{#1}
-        \IfNoValueF{#2} { \tsp ( \ArgList{#2} ) }
-    }
-    \global\procnametrue
-}
-
-\newif\iffirstarg
-
-\NewDocumentCommand{\ArgList}{ >{\SplitList{,}} m } {
-    \global\firstargtrue
-    \ProcessList{#1}{\Arg}
-}
-
-\NewDocumentCommand{\Arg}{ >{\SplitArgument{1}{=}} m } {
-    \AArg #1
-}
-
-\NewDocumentCommand{\AArg}{ m m } {
-    \iffirstarg\global\firstargfalse\else{,\ }\fi
-    \hspace*{-1pt} \id{#1}
-    \IfNoValueF{#2} {\tsp : \; #2}
-}
-
-\ExplSyntaxOff
 
 
 \endinput
