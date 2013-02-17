@@ -33,7 +33,7 @@ optional second argument is a comma separated list of parameters, each
 optionally with a description of the parameter (after an equal sign).
 Example:
 ```tex
-    \Procedure{Dijkstra}, \Procedure{Dijkstra}{G, s}, \Procedure{Dijkstra}{G = graph, s = vertex}
+    \Procedure{Dijkstra}, \Procedure{Dijkstra}[G, s], \Procedure{Dijkstra}[G = graph, s = vertex]
 ```
 
 ### Format commands
@@ -41,7 +41,7 @@ Example:
 
 To typeset a procedure in small caps, use:
 ```tex
-    \proc{Insertion-Sort}{Vec} % same as \Procedure
+    \proc{Insertion-Sort}[Vec] % same as \Procedure
 ```
 
 
@@ -59,7 +59,7 @@ To typeset an identifier in italics, use:
 
 To typeset a fixed function in roman, use:
 ```tex
-    \func{sin}{x}, \func{out-degree}{} % same as \Procedure
+    \func{sin}[x], \func{out-degree}[] % same as \Procedure
 ```
 
 
@@ -129,7 +129,7 @@ Code for the example
 
 ```tex
 \begin{codebox}
-    \Procedure{Dijkstra}{G = graph, s = vertex}
+    \Procedure{Dijkstra}[G = graph, s = vertex]
 
     \li \For each vertex $v \in \id{V_G}$
     \li \Do
@@ -144,7 +144,7 @@ Code for the example
 
     \li \While $Q \neq \emptyset$
     \li \Do
-            $u \gets \proc{Extract-Min}{Q}$
+            $u \gets \proc{Extract-Min}[Q]$
 
     \li     \For each edge $e = (u,v)$
     \li     \Do

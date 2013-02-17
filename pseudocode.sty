@@ -19,9 +19,9 @@
 \RequirePackage{xparse}   % needed for \call command
 
 
-%%%%%%%%%%%%%%%%%%%
-% Helper commands %
-%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%
+% Formatting commands %
+%%%%%%%%%%%%%%%%%%%%%%%
 
 
 % Tiny space
@@ -30,86 +30,40 @@
 % Force hyphens
 \newcommand{\text@hyphens}{\mathcode`\-=`\-\relax}
 
-\ExplSyntaxOn
+% Command for typesetting constants: \const{true}, \const{nil}
+\newcommand{\const}[1]{\textnormal{\scshape#1}}
 
-% Command for typesetting procedures/functions
-\NewDocumentCommand{\call}{ m g } { %  \call{Insertion-Sort}, \call{Dijkstra}{G, s}, \call{Dijkstra}{G = graph, s = vertex}
-    #1
-    \IfNoValueF{#2} { \tsp ( \ArgList{#2} ) }
+% Command for typesetting identifiers: \id{key}, \id{left-sum}
+\newcommand{\id}[1]{\ensuremath{\mathit{\text@hyphens#1}}}
+
+% Command for typesetting procedures:
+% \proc{Insertion-Sort},
+% \proc{Dijkstra}[G, s],
+% \proc{Dijkstra}[G = graph, s = vertex]
+\NewDocumentCommand{\proc}{ m o } {\call{\textnormal{\scshape#1}}[#2]}
+
+% Command for typesetting fixed functions:
+% \func{sin}[x],
+% \func{out-degree}[G, v]
+\NewDocumentCommand{\func}{ m o } {
+    \call{\ensuremath{{\mathop{\text@hyphens\operator@font#1}\nolimits}}}[#2]
 }
 
-% Is first call argument
-\newif\iffirstarg
+% Command for typesetting subarray ranges: $[1 \twodots n]$
+\newcommand{\twodots}{\mathinner{\ldotp\ldotp}}
 
-% Parse argument list
-\NewDocumentCommand{\ArgList}{ >{\SplitList{,}} m } {
-    \global\firstargtrue
-    \ProcessList{#1}{\Arg}
-}
+% Command for typesetting object attributes: \member{user}{name}
+\newcommand{\member}[2]{\id{#1}\ensuremath{\tsp . \tsp}\id{#2}}
 
-% Parse argument
-\NewDocumentCommand{\Arg}{ >{\SplitArgument{1}{=}} m } {
-    \AArg #1
-}
+% Command for typesetting array elements: \at{names}{pos}
+\newcommand{\at}[2]{\ensuremath{\id{#1}\tsp[\id{#2}]}}
 
-% Process argument
-\NewDocumentCommand{\AArg}{ m m } {
-    \iffirstarg\global\firstargfalse\else{,\ }\fi
-    \IfNoValueF{#2} {\hspace*{-1pt}}
-    \id{#1}
-    \IfNoValueF{#2} {\tsp : \; #2}
-}
-
-\ExplSyntaxOff
-
-% \proc command helper
-\newcommand{\@proc}[1]{\textnormal{\scshape#1}}
-
-% \func command helper
-\newcommand{\@func}[1]{%
-    \ensuremath{{\mathop{\text@hyphens\operator@font#1}\nolimits}}}
-
-
-%%%%%%%%%%%%%%%%%%%%%%%
-% Formatting commands %
-%%%%%%%%%%%%%%%%%%%%%%%
-
-
-% Command for typesetting constants
-\newcommand{\const}[1]{\textnormal{\scshape#1}} %  \const{true}, \const{nil}
-
-% Command for typesetting identifiers
-\newcommand{\id}[1]{%
-    \ensuremath{\mathit{\text@hyphens#1}}} %  \id{key}, \id{left-sum}
-
-\ExplSyntaxOn
-
-% Command for typesetting procedures
-\NewDocumentCommand{\proc}{ m g } { %  \proc{Insertion-Sort}, \proc{Dijkstra}{G, s}, \proc{Dijkstra}{G = graph, s = vertex}
-    \call{\@proc{#1}}{#2}
-}
-
-% Command for typesetting fixed functions
-\NewDocumentCommand{\func}{ m g } { %  \func{sin}{x}, \func{out-degree}{G, v}
-    \call{\@func{#1}}{#2}
-}
-
-\ExplSyntaxOff
-
-% Command for typesetting subarray ranges.
-\newcommand{\twodots}{\mathinner{\ldotp\ldotp}} %  $[1 \twodots n]$
-
-% Command for typesetting object attributes.
-\newcommand{\member}[2]{\id{#1}\ensuremath{\tsp . \tsp}\id{#2}} %  \member{user}{name}
-
-% Command for typesetting array elements.
-\newcommand{\at}[2]{\ensuremath{\id{#1}\tsp[\id{#2}]}} %  \at{names}{pos}
-
-% Command for typesetting keywords
-\newcommand{\kw}[1]{\textnormal{\textbf{#1}}} %  \kw{for}, \kw{if}
+% Command for typesetting keywords: \kw{for}, \kw{if}
+\newcommand{\kw}[1]{\textbf{#1}}
 
 % Override the 'gets' symbol.
 %\def\gets{\mathrel{\hspace{1pt}=\hspace{1pt}}}
+
 %\newcommand{\isequal}{\mathrel{\scalebox{0.8}[1]{=}\hspace*{1pt}\scalebox{0.8}[1]{=}}}
 
 
@@ -118,27 +72,26 @@
 %%%%%%%%%%%%%%%%%%%%%%%
 
 
-% When we make a codebox, we save the code part into a box before
-% printing it.  We do not actually print the code until we know how many
-% line numbers there are.
+% When we make a codebox, we save the code part into a box before printing it.
+% We do not actually print the code until we know how many line numbers there
+% are.
 \newsavebox{\savecode}
 
-% The \ifprocname command tells us whether this procedure has been
-% given a name yet.
+% The \ifprocname command tells us whether this procedure has been given a name
+% yet.
 \newif\ifprocname
 
-% The \iffirstcodeline command tells us whether we are about to
-% produce the first line other than the procedure declaration.
+% The \iffirstcodeline command tells us whether we are about to produce the
+% first line other than the procedure declaration.
 \newif\iffirstcodeline
 
-% \digitwidth gives the width of a single digit.  All digits are the
-% same width.  We'll need this amount to do the right thing for line
-% numbers.
+% \digitwidth gives the width of a single digit.  All digits are the same width.
+% We'll need this amount to do the right thing for line numbers.
 \newlength{\digitwidth}
 \settowidth{\digitwidth}{0}
 
-% Assume that the width of the codebox is the width of the text, minus
-% the width of 2 digits.  We'll correct for that later.
+% Assume that the width of the codebox is the width of the text, minus the width
+% of 2 digits.  We'll correct for that later.
 \newlength{\codeboxwidth}
 \setlength{\codeboxwidth}{\linewidth} % Thanks, David Etherington!
 \addtolength{\codeboxwidth}{-2\digitwidth}
@@ -164,7 +117,8 @@
     \firstcodelinetrue%
     % distance between numbers and code
     \setlength{\tabbingsep}{1em}%
-    % Initialize \@lilabel to allow a pageref \label cmd at the beginning of the codebox
+    % Initialize \@lilabel to allow a pageref \label cmd at the beginning of the
+    % codebox
     \global\let\@lilabel\@currentlabel
     \def\@currentlabel{\@lilabel}%
     % save the code into a box
@@ -176,9 +130,8 @@
     \begin{tabbing}%
     99\=\codeindent\=\codeindent\=\codeindent\=\codeindent\=\codeindent\=\codeindent\=\codeindent\=codeindent\=codeindent\=\+\kill%
 }{%
-    % Here's what's run at the end of a codebox environment.  Start by
-    % making sure that we have ended at indent level 0.  Otherwise, print a
-    % warning.
+    % Here's what's run at the end of a codebox environment.  Start by making
+    % sure that we have ended at indent level 0.  Otherwise, print a warning.
     \ifnum\value{indent}=0\else\typeout{Warning: Indentation ends at level \theindent\space in codebox on page \thepage.}\fi%
     % close all open environments
     \end{tabbing}%
@@ -206,15 +159,11 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-\ExplSyntaxOn
-
 % Procedure name
-\NewDocumentCommand{\Procedure}{ m g } {
-    \global\def\saveprocname{\proc{#1}{#2}}
-    \global\procnametrue
+\NewDocumentCommand{\Procedure}{ m o } {%
+    \global\def\saveprocname{\proc{#1}[#2]}%
+    \global\procnametrue%
 }
-
-\ExplSyntaxOff
 
 
 %%%%%%%%%%%%%%%%%%%%%%%
@@ -225,9 +174,11 @@
 % counter for recursive indenting code
 \newcounter{thisindent}
 
-% \putindents is a recursive macro that indents a number of times given
-% by the counter thisindent.
-\newcommand{\putindents}{\ifnum\value{thisindent}>0\>\addtocounter{thisindent}{-1}\putindents\fi}
+% \putindents is a recursive macro that indents a number of times given by the
+% counter thisindent.
+\newcommand{\putindents}{%
+    \ifnum\value{thisindent}>0\>\addtocounter{thisindent}{-1}\putindents\fi%
+}
 
 \newcommand{\Indent}{\setcounter{thisindent}{\value{indent}}\putindents}
 
@@ -236,27 +187,27 @@
 % Indent the next line one level more
 \newcommand{\Indentmore}{\addtocounter{indent}{1}}
 
-\newif\ifnumberedline
-\numberedlinetrue
 
-% The \li command starts a new numbered line.
-\newcommand{\li}{\global\numberedlinetrue%
-\iffirstcodeline\global\firstcodelinefalse\else\\[2pt] \fi
-\stepcounter{codelinenumber}%
-\liprint}
-
-% The \lispace command starts a new numbered line with a little extra
-% space above, given by the argument.
-\newcommand{\lispace}[1]{\iffirstcodeline\global\firstcodelinefalse\else\\[#1] \fi
-\stepcounter{codelinenumber}%
-\liprint}
-
-\newcommand{\liempty}{\lispace{0pt}\lispace{0pt}}
+% should this line have a number
+\newif\ifnumberedline\numberedlinetrue
 
 % \liprint actually prints the line number and sets up the indentation.
-\newcommand{\liprint}{\protected@xdef\@lilabel{\thecodelinenumber}%
-\ifnumberedline\thecodelinenumber\fi\'\Indent%
+\newcommand{\liprint}{%
+    \protected@xdef\@lilabel{\thecodelinenumber}%
+    \ifnumberedline\thecodelinenumber\fi\'\Indent%
 }
+
+% The \li command starts a new numbered line. The optional defines sets with a
+% little extra the space above.
+\newcommand{\li}[1][2pt]{%
+    \global\numberedlinetrue%
+    \iffirstcodeline\global\firstcodelinefalse\else\\[#1] \fi
+    \stepcounter{codelinenumber}%
+    \liprint%
+}
+
+\newcommand{\liempty}{\li[0pt]\li[0pt]}
+
 
 \providecommand{\numref}[1]{%
   \@ifundefined{r@#1}{000}{%
@@ -266,20 +217,27 @@
 }
 
 % \setlinenumber sets the line number to its argument
-\newcommand{\setlinenumber}[1]{\setcounter{codelinenumber}{\numref{#1}}%
-\addtocounter{codelinenumber}{-1}}
-% \setlinenumberplus sets the line number to its first argument plus its
-% second argument.
-\newcommand{\setlinenumberplus}[2]{\setcounter{codelinenumber}{\numref{#1}}%
-\addtocounter{codelinenumber}{-1}\addtocounter{codelinenumber}{#2}}
+\newcommand{\setlinenumber}[1]{%
+    \setcounter{codelinenumber}{\numref{#1}}%
+    \addtocounter{codelinenumber}{-1}%
+}
+
+% \setlinenumberplus sets the line number to its first argument plus its second
+% argument.
+\newcommand{\setlinenumberplus}[2]{%
+    \setcounter{codelinenumber}{\numref{#1}}%
+    \addtocounter{codelinenumber}{-1}\addtocounter{codelinenumber}{#2}%
+}
 
 % The \zi command starts a new unnumbered line.
-\newcommand{\zi}{\global\numberedlinefalse%
-\iffirstcodeline\global\firstcodelinefalse\else\\ \fi
-\liprint}
+\newcommand{\zi}{%
+    \global\numberedlinefalse%
+    \iffirstcodeline\global\firstcodelinefalse\else\\ \fi
+    \liprint%
+}
 
-% Temporarily make all lines indented so that they start at the end of
-% a given text.
+% Temporarily make all lines indented so that they start at the end of a given
+% text.
 \newcommand{\Startalign}[1]{\\ \pushtabs\FakeIndent#1\=\kill}
 \newcommand{\Stopalign}{\poptabs}
 \newcommand{\FakeIndent}{\setcounter{thisindent}{\value{indent}}\putfakeindents}
@@ -315,6 +273,41 @@
 \newcommand{\Spawn}{\ifmmode\textbf{spawn}\ \else\textbf{spawn} \fi}
 \newcommand{\Sync}{\textbf{sync}}
 \newcommand{\Parfor}{\textbf{parallel for} }
+
+
+%%%%%%%%%%%%%%%%%%%
+% Helper commands %
+%%%%%%%%%%%%%%%%%%%
+
+
+% Is first call argument
+\newif\iffirstarg
+
+% Command for typesetting procedures/functions:
+% \call{Insertion-Sort},
+% \call{Dijkstra}[G, s],
+% \call{Dijkstra}[G = graph, s = vertex]
+\NewDocumentCommand{\call}{ m >{\SplitList{,}} o } {%
+    #1%
+    \IfValueT{#2} {%
+%       Parse argument list
+        \textrm{\tsp(%
+            \global\firstargtrue%
+            \ProcessList{#2}{\ParseArg}%
+            \global\firstargfalse%
+        \tsp)}%
+    }%
+}
+
+% Parse argument
+\NewDocumentCommand{\ParseArg}{ >{\SplitArgument{1}{=}} m } {\Arg#1}
+
+% Process argument
+\NewDocumentCommand{\Arg}{ m m } {%
+    \iffirstarg\global\firstargfalse\else{\textit{,\,}}\fi%
+    \id{#1}%
+    \IfValueT{#2} {\textrm{\tsp :\ #2\tsp}}%
+}
 
 
 \endinput
