@@ -16,7 +16,7 @@
 
 
 \RequirePackage{graphics} % needed for \scalebox command
-\RequirePackage{xparse}   % needed for \proc command
+\RequirePackage{xparse}   % needed for \call command
 
 
 %%%%%%%%%%%%%%%%%%%
@@ -82,15 +82,6 @@
 \newcommand{\id}[1]{%
     \ensuremath{\mathit{\text@hyphens#1}}} %  \id{key}, \id{left-sum}
 
-% Command for typesetting subarray ranges.
-\newcommand{\twodots}{\mathinner{\ldotp\ldotp}} %  $[1 \twodots n]$
-
-% Command for typesetting object attributes.
-\newcommand{\member}[2]{\id{#1}\ensuremath{\tsp . \tsp}\id{#2}} %  \member{user}{name}
-
-% Command for typesetting array elements.
-\newcommand{\at}[2]{\id{#1}\tsp[\id{#2}]} %  \at{names}{pos}
-
 \ExplSyntaxOn
 
 % Command for typesetting procedures
@@ -104,6 +95,22 @@
 }
 
 \ExplSyntaxOff
+
+% Command for typesetting subarray ranges.
+\newcommand{\twodots}{\mathinner{\ldotp\ldotp}} %  $[1 \twodots n]$
+
+% Command for typesetting object attributes.
+\newcommand{\member}[2]{\id{#1}\ensuremath{\tsp . \tsp}\id{#2}} %  \member{user}{name}
+
+% Command for typesetting array elements.
+\newcommand{\at}[2]{\ensuremath{\id{#1}\tsp[\id{#2}]}} %  \at{names}{pos}
+
+% Command for typesetting keywords
+\newcommand{\kw}[1]{\textnormal{\textbf{#1}}} %  \kw{for}, \kw{if}
+
+% Override the 'gets' symbol.
+%\def\gets{\mathrel{\hspace{1pt}=\hspace{1pt}}}
+%\newcommand{\isequal}{\mathrel{\scalebox{0.8}[1]{=}\hspace*{1pt}\scalebox{0.8}[1]{=}}}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%
@@ -210,46 +217,21 @@
 \ExplSyntaxOff
 
 
+%%%%%%%%%%%%%%%%%%%%%%%
+% codebox indentation %
+%%%%%%%%%%%%%%%%%%%%%%%
 
-\newcounter{thisindent}         % counter for recursive indenting code
-\newcommand{\Indent}{\setcounter{thisindent}{\value{indent}}\putindents}
+
+% counter for recursive indenting code
+\newcounter{thisindent}
+
 % \putindents is a recursive macro that indents a number of times given
 % by the counter thisindent.
 \newcommand{\putindents}{\ifnum\value{thisindent}>0\>\addtocounter{thisindent}{-1}\putindents\fi}
 
-% For typesetting any keyword in the main text.
-\newcommand{\kw}[1]{\textbf{#1}}
+\newcommand{\Indent}{\setcounter{thisindent}{\value{indent}}\putindents}
 
-% Override the 'gets' symbol.
-%\def\gets{\mathrel{\hspace{1pt}=\hspace{1pt}}}
-%\newcommand{\isequal}{\mathrel{\scalebox{0.8}[1]{=}\hspace*{1pt}\scalebox{0.8}[1]{=}}}
-\newcommand{\isequal}{=}
 
-% All of our favorite keywords.
-\newcommand{\For}{\textbf{for} }
-\newcommand{\To}{\ifmmode\ \textrm{\textbf{to}}\ \else\textbf{to}\ \fi}
-\newcommand{\By}{\ifmmode\ \textrm{\textbf{by}}\ \else\textbf{by}\ \fi}
-\newcommand{\Downto}{\ifmmode\ \textrm{\textbf{downto}}\ \else\textbf{downto}\ \fi}
-\newcommand{\While}{\textbf{while} }
-\newcommand{\Repeat}{\textbf{repeat}\>\addtocounter{indent}{1}}
-\newcommand{\Until}{\kill\addtocounter{indent}{-1}\liprint\textbf{until} }
-\newcommand{\If}{\textbf{if} }
-\newcommand{\Then}{\>\addtocounter{indent}{1}}
-\newcommand{\Else}{\kill\addtocounter{indent}{-1}\liprint\textbf{else}\>\addtocounter{indent}{1}}
-\newcommand{\End}{\addtocounter{indent}{-1}}
-\newcommand{\ElseIf}{\kill\addtocounter{indent}{-1}\liprint\textbf{elseif} }
-\newcommand{\ElseNoIf}{\kill\addtocounter{indent}{-1}\liprint\textbf{else} \addtocounter{indent}{1}}
-\newcommand{\Do}{\>\addtocounter{indent}{1}}
-\newcommand{\Return}{\textbf{return} }
-\newcommand{\CommentSymbol}{\texttt{\textbf{/\hspace*{-0.3em}/}}}
-\newcommand{\Comment}{\CommentSymbol\ }
-\newcommand{\RComment}{\`\CommentSymbol\ }
-\newcommand{\Goto}{\textbf{goto} }
-\newcommand{\Error}{\textbf{error} } % optionally followed by string argument
-\newcommand{\EndTest}{\textbf{:}}
-\newcommand{\Spawn}{\ifmmode\textbf{spawn}\ \else\textbf{spawn} \fi}
-\newcommand{\Sync}{\textbf{sync}}
-\newcommand{\Parfor}{\textbf{parallel for} }
 
 % Indent the next line one level more
 \newcommand{\Indentmore}{\addtocounter{indent}{1}}
@@ -302,6 +284,37 @@
 \newcommand{\Stopalign}{\poptabs}
 \newcommand{\FakeIndent}{\setcounter{thisindent}{\value{indent}}\putfakeindents}
 \newcommand{\putfakeindents}{\ifnum\value{thisindent}>0\textbf{else }\addtocounter{thisindent}{-1}\putfakeindents\fi}
+
+
+%%%%%%%%%%%%
+% keywords %
+%%%%%%%%%%%%
+
+
+\newcommand{\For}{\textbf{for} }
+\newcommand{\To}{\ifmmode\ \textrm{\textbf{to}}\ \else\textbf{to}\ \fi}
+\newcommand{\By}{\ifmmode\ \textrm{\textbf{by}}\ \else\textbf{by}\ \fi}
+\newcommand{\Downto}{\ifmmode\ \textrm{\textbf{downto}}\ \else\textbf{downto}\ \fi}
+\newcommand{\While}{\textbf{while} }
+\newcommand{\Repeat}{\textbf{repeat}\>\addtocounter{indent}{1}}
+\newcommand{\Until}{\kill\addtocounter{indent}{-1}\liprint\textbf{until} }
+\newcommand{\If}{\textbf{if} }
+\newcommand{\Then}{\>\addtocounter{indent}{1}}
+\newcommand{\Else}{\kill\addtocounter{indent}{-1}\liprint\textbf{else}\>\addtocounter{indent}{1}}
+\newcommand{\End}{\addtocounter{indent}{-1}}
+\newcommand{\ElseIf}{\kill\addtocounter{indent}{-1}\liprint\textbf{elseif} }
+\newcommand{\ElseNoIf}{\kill\addtocounter{indent}{-1}\liprint\textbf{else} \addtocounter{indent}{1}}
+\newcommand{\Do}{\>\addtocounter{indent}{1}}
+\newcommand{\Return}{\textbf{return} }
+\newcommand{\CommentSymbol}{\texttt{\textbf{/\hspace*{-0.3em}/}}}
+\newcommand{\Comment}{\CommentSymbol\ }
+\newcommand{\RComment}{\`\CommentSymbol\ }
+\newcommand{\Goto}{\textbf{goto} }
+\newcommand{\Error}{\textbf{error} } % optionally followed by string argument
+\newcommand{\EndTest}{\textbf{:}}
+\newcommand{\Spawn}{\ifmmode\textbf{spawn}\ \else\textbf{spawn} \fi}
+\newcommand{\Sync}{\textbf{sync}}
+\newcommand{\Parfor}{\textbf{parallel for} }
 
 
 \endinput

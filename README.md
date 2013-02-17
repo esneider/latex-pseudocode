@@ -39,37 +39,43 @@ Example:
 ### Format commands
 
 
-To typeset the name of a function in small caps, use:
+To typeset a procedure in small caps, use:
 ```tex
     \proc{Insertion-Sort}{Vec} % same as \Procedure
 ```
 
 
-To typeset the name of a constant in small caps, use:
+To typeset a constant in small caps, use:
 ```tex
     \const{true}, \const{nil}
 ```
 
 
-To typeset the name of an identifier in regular italics, use:
+To typeset an identifier in italics, use:
 ```tex
     \id{key}, \id{left-sum}
 ```
 
 
-To typeset the name of a fixed function in roman, use:
+To typeset a fixed function in roman, use:
 ```tex
     \func{sin}{x}, \func{out-degree}{} % same as \Procedure
 ```
 
 
-To typeset an object attribute, use:
+To typeset a keyword in boldface, use:
+```tex
+    \kw{for}, \kw{if}
+```
+
+
+To typeset an object attribute with dot syntax, use:
 ```tex
     \member{user}{name}
 ```
 
 
-To typeset array elements, use:
+To typeset array elements with square brackets syntax, use:
 ```tex
     \at{names}{pos}
 ```
@@ -91,6 +97,10 @@ To typeset subarray ranges, use:
 
 Other than the `\Function` line, all lines begin with either `\li` (for
 a numbered line) or `\zi` (for an unnumbered line).
+
+
+### Keywords
+
 
 The following commands are provided for typesetting keywords and
 handling automatic indentation:
