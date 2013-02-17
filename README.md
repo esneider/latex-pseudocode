@@ -75,7 +75,7 @@ To typeset an object attribute with dot syntax, use:
 ```
 
 
-To typeset array elements with square brackets syntax, use:
+To typeset an array element with square brackets syntax, use:
 ```tex
     \at{names}{pos}
 ```
@@ -95,11 +95,11 @@ To typeset subarray ranges, use:
 ### Line numbering
 
 
-Other than the `\Function` line, all lines begin with either `\li` (for
+Other than the `\Procedure` line, all lines begin with either `\li` (for
 a numbered line) or `\zi` (for an unnumbered line).
 
 
-### Keywords
+### Keywords and indentation
 
 
 The following commands are provided for typesetting keywords and
