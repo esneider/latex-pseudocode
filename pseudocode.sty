@@ -38,15 +38,15 @@
 
 % Command for typesetting procedures:
 % \proc{Insertion-Sort},
-% \proc{Dijkstra}[G, s],
-% \proc{Dijkstra}[G = graph, s = vertex]
-\NewDocumentCommand{\proc}{ m o } {\call{\textnormal{\scshape#1}}[#2]}
+% \proc{Dijkstra}{G, s},
+% \proc{Dijkstra}{G = graph, s = vertex}
+\NewDocumentCommand{\proc}{ m g } {\call{\textnormal{\scshape#1}}{#2}}
 
 % Command for typesetting fixed functions:
-% \func{sin}[x],
-% \func{out-degree}[G, v]
-\NewDocumentCommand{\func}{ m o } {
-    \call{\ensuremath{{\mathop{\text@hyphens\operator@font#1}\nolimits}}}[#2]
+% \func{sin}{x},
+% \func{out-degree}{G, v}
+\NewDocumentCommand{\func}{ m g } {
+    \call{\ensuremath{{\mathop{\text@hyphens\operator@font#1}\nolimits}}}{#2}
 }
 
 % Command for typesetting subarray ranges: $[1 \twodots n]$
@@ -160,8 +160,8 @@
 
 
 % Procedure name
-\NewDocumentCommand{\Procedure}{ m o } {%
-    \global\def\saveprocname{\proc{#1}[#2]}%
+\NewDocumentCommand{\Procedure}{ m g } {%
+    \global\def\saveprocname{\proc{#1}{#2}}%
     \global\procnametrue%
 }
 
@@ -285,9 +285,9 @@
 
 % Command for typesetting procedures/functions:
 % \call{Insertion-Sort},
-% \call{Dijkstra}[G, s],
-% \call{Dijkstra}[G = graph, s = vertex]
-\NewDocumentCommand{\call}{ m >{\SplitList{,}} o } {%
+% \call{Dijkstra}{G, s},
+% \call{Dijkstra}{G = graph, s = vertex}
+\NewDocumentCommand{\call}{ m >{\SplitList{,}} g } {%
     #1%
     \IfValueT{#2} {%
 %       Parse argument list
@@ -300,10 +300,10 @@
 }
 
 % Parse argument
-\NewDocumentCommand{\ParseArg}{ >{\SplitArgument{1}{=}} m } {\Arg#1}
+\NewDocumentCommand{\ParseArg}{ >{\SplitArgument{1}{=}} m } {\PrintArg#1}
 
 % Process argument
-\NewDocumentCommand{\Arg}{ m m } {%
+\NewDocumentCommand{\PrintArg}{ m m } {%
     \iffirstarg\global\firstargfalse\else{\textit{,\,}}\fi%
     \id{#1}%
     \IfValueT{#2} {\textrm{\tsp :\ #2\tsp}}%
