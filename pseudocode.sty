@@ -1,15 +1,15 @@
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%
-% pseudocode.sty, by Dario Sneidermanis
-%
-% Based on package `clrscode3e', written by Thomas H. Cormen:
-%
-% Package for producing pseudocode in the style of Cormen, Leiserson,
-% Rivest, and Stein, Introduction to Algorithms, Third edition.
-%
-% http://www.cs.dartmouth.edu/~thc/clrscode/
-%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                                     %
+% pseudocode.sty, by Dario Sneidermanis.                              %
+%                                                                     %
+% Based on package `clrscode3e', written by Thomas H. Cormen:         %
+%                                                                     %
+% Package for producing pseudocode in the style of Cormen, Leiserson, %
+% Rivest, and Stein, Introduction to Algorithms, Third edition.       %
+%                                                                     %
+% http://www.cs.dartmouth.edu/~thc/clrscode/                          %
+%                                                                     %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 \ProvidesPackage{pseudocode}
@@ -24,60 +24,54 @@
 %%%%%%%%%%%%%%%%%%%%%%%
 
 
-% Command for typesetting constants
+% Command for typesetting constants.
 % Usage examples:
 %   \const{true}
 %   \const{nil}
 \newcommand{\const}[1]{\textnormal{\scshape#1}}
 
-% Command for typesetting variables
+% Command for typesetting variables.
 % Usage examples:
 %   \var{key}
 %   \var{left-sum}
 %   \var{i}
-\newcommand{\var}[1]{\ensuremath{\mathit{\text@hyphens#1}}}
+\newcommand{\var}[1]{\ensuremath{\hspace*{-0.5pt}\mathit{\text@hyphens#1}}}
 
-% Command for typesetting finctions
+% Command for typesetting functions.
 % Usage examples:
-%   \func{Insertion-Sort}
+%   \func{Insertion-Sort}{}
 %   \func{Dijkstra}{G, s}
 %   \func{Dijkstra}{G = graph, s = vertex}
-\NewDocumentCommand{\func}{m g} {\call{\textnormal{\scshape#1}}{#2}}
+\NewDocumentCommand{\func}{m g} {\@@function{\textnormal{\scshape#1}}{#2}}
 
-% Command for typesetting fixed functions
+% Command for typesetting fixed functions.
 % Usage examples:
 %   \fixfunc{sin}{x}
 %   \fixfunc{out-degree}{G, v}
-\NewDocumentCommand{\fixfunc}{m g} {
-    \call{\ensuremath{{\mathop{\text@hyphens\operator@font#1}\nolimits}}}{#2}
+\NewDocumentCommand{\fixfunc}{m g} {%
+    \@@function{\ensuremath{{\mathop{\text@hyphens\operator@font#1}\nolimits}}}{#2}%
 }
 
-% Command for typesetting subarray ranges
+% Command for typesetting subarray ranges.
 % Usage examples:
-%   [1 \twodots n]
+%   $[1 \twodots n]$
 \newcommand{\twodots}{\mathinner{\ldotp\ldotp}}
 
-% Command for typesetting object attributes
+% Command for typesetting object attributes.
 % Usage examples:
 %   \member{user}{name}
-\newcommand{\member}[2]{\var{#1}\ensuremath{\tsp . \tsp}\var{#2}}
+\newcommand{\member}[2]{\var{#1}\ensuremath{.\@@tsp\@@tsp}\var{#2}}
 
-% Command for typesetting array elements
+% Command for typesetting array elements.
 % Usage examples:
 %   \at{names}{pos}
-\newcommand{\at}[2]{\ensuremath{\var{#1}\tsp[\var{#2}]}}
+\newcommand{\at}[2]{\ensuremath{\var{#1}\@@tsp[\@@surround{\var{#2}}]}}
 
-% Command for typesetting keywords
+% Command for typesetting keywords.
 % Usage examples:
 %   \keyword{for}
 %   \keyword{if}
-\newcommand{\keyword}[1]{\textbf{#1}}
-
-% Uncomment to override the 'gets' symbol with an equals
-%\def\gets{\mathrel{\hspace{1pt}=\hspace{1pt}}}
-
-% Uncomment to provide symbol 'isequal' (==)
-%\newcommand{\isequal}{\mathrel{\scalebox{0.8}[1]{=}\hspace*{1pt}\scalebox{0.8}[1]{=}}}
+\newcommand{\kw}[1]{\textbf{#1}}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -90,7 +84,7 @@
 % are.
 \newsavebox{\savecode}
 
-% The \ifprocname command tells us whether this procedure has been given a name
+% The \ifprocname command tells us whether this procedure has been given a name.
 % yet.
 \newif\ifprocname
 
@@ -115,12 +109,7 @@
 % The indent counter keeps track of the current indentation level.
 \newcounter{indent}
 
-% THC: This next command is magic to me.  I didn't write it.
-\def\@startline{\global\@curtabmar\@nxttabmar\relax
-    \global\@curtab\@curtabmar\setbox\@curline\hbox
-    {}\@startfield\strut}
-
-% The "pseudocode" environment produces an unbreakable section of code
+% The "pseudocode" environment produces an unbreakable section of code.
 \newenvironment{pseudocode}{%
     % this proc hasn't been given a name yet
     \global\procnamefalse%
@@ -172,8 +161,8 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-% Procedure name
-\NewDocumentCommand{\Procedure}{ m g } {%
+% Function name.
+\NewDocumentCommand{\function}{ m g } {%
     \global\def\saveprocname{\func{#1}{#2}}%
     \global\procnametrue%
 }
@@ -184,7 +173,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-% counter for recursive indenting code
+% counter for recursive indenting code.
 \newcounter{thisindent}
 
 % \putindents is a recursive macro that indents a number of times given by the
@@ -197,11 +186,11 @@
 
 
 
-% Indent the next line one level more
+% Indent the next line one level more.
 \newcommand{\Indentmore}{\addtocounter{indent}{1}}
 
 
-% should this line have a number
+% should this line have a number.
 \newif\ifnumberedline\numberedlinetrue
 
 % \liprint actually prints the line number and sets up the indentation.
@@ -229,7 +218,7 @@
   }%
 }
 
-% \setlinenumber sets the line number to its argument
+% \setlinenumber sets the line number to its argument.
 \newcommand{\setlinenumber}[1]{%
     \setcounter{codelinenumber}{\numref{#1}}%
     \addtocounter{codelinenumber}{-1}%
@@ -281,49 +270,77 @@
 \newcommand{\Comment}{\CommentSymbol\ }
 \newcommand{\RComment}{\`\CommentSymbol\ }
 \newcommand{\Goto}{\textbf{goto} }
-\newcommand{\Error}{\textbf{error} } % optionally followed by string argument
+\newcommand{\Error}{\textbf{error} } % optionally followed by string argument.
 \newcommand{\EndTest}{\textbf{:}}
 \newcommand{\Spawn}{\ifmmode\textbf{spawn}\ \else\textbf{spawn} \fi}
 \newcommand{\Sync}{\textbf{sync}}
 \newcommand{\Parfor}{\textbf{parallel for} }
 
 
-%%%%%%%%%%%%%%%%%%%
-% Helper commands %
-%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%
+% Misc helpers %
+%%%%%%%%%%%%%%%%
 
 
-% Tiny space
-\newcommand{\tsp}{\hspace*{0.5pt}}
+% Tiny space.
+\newcommand{\@@tsp}{\hspace*{0.5pt}}
 
-% Force hyphens
+% Force hyphens.
 \newcommand{\text@hyphens}{\mathcode`\-=`\-\relax}
 
-% Is first call argument
-\newif\iffirstarg
 
-% Command for typesetting functions
-\NewDocumentCommand{\call}{m >{\SplitList{,}} g} {%
+%%%%%%%%%%%%%%%%%%%%
+% @@funcall helper %
+%%%%%%%%%%%%%%%%%%%%
+
+
+% The \if@@firstarg command tells us if we are parsing the first call argument.
+\newif\if@@firstarg
+
+% Command for typesetting function calls/declarations.
+\NewDocumentCommand{\@@function}{m >{\SplitList{,}} g} {%
     #1%
     \IfValueT{#2} {%
-        \textrm{\tsp(%
-            \global\firstargtrue%
-            \ProcessList{#2}{\ParseArg}%
-            \global\firstargfalse%
-        \tsp)}%
+        \textrm{\@@tsp(%
+            \@@surround{%
+                \global\@@firstargtrue%
+                \ProcessList{#2}{\@@parsearg}%
+                \global\@@firstargfalse%
+            }%
+        )}%
     }%
 }
 
-% Wrapper command for parsing function arguments
-\NewDocumentCommand{\ParseArg}{>{\SplitArgument{1}{=}} m} {\PrintArg#1}
+% Command for splitting a function argument.
+\NewDocumentCommand{\@@parsearg}{>{\SplitArgument{1}{:}} m} {\@@printarg#1}
 
-% Command for parsing function arguments
-\NewDocumentCommand{\PrintArg}{m m} {%
-    \iffirstarg\global\firstargfalse\else{\textit{,\,}}\fi%
+% Command for parsing a function argument.
+\NewDocumentCommand{\@@printarg}{m m} {%
+    \if@@firstarg\global\@@firstargfalse\else{\textit{,\ }}\fi%
     \var{#1}%
-    \IfValueT{#2} {\textrm{\tsp :\ #2\tsp}}%
+    \IfValueT{#2} {\textrm{\@@tsp :\ #2\@@tsp}}%
 }
 
+
+%%%%%%%%%%%%%%%%%%%%%
+% @@surround helper %
+%%%%%%%%%%%%%%%%%%%%%
+
+
+% \@@paramlen holds the width of the text being surrounded.
+\newlength{\@@paramlen}
+
+% \@@maxlen holds the maximum accepted length without spaces
+\newlength{\@@maxlen}
+\settowidth{\@@maxlen}{\var{W}}
+
+% Command for surrounding text with spaces depending on its length.
+\newcommand{\@@surround}[1]{%
+    \settowidth{\@@paramlen}{\var{#1}}%
+    \ifdim\@@paramlen>\@@maxlen\@@tsp\@@tsp\@@tsp\fi%
+    #1%
+    \ifdim\@@paramlen>\@@maxlen\@@tsp\@@tsp\fi%
+}
 
 \endinput
 
