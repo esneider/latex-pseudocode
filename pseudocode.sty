@@ -15,8 +15,8 @@
 \ProvidesPackage{pseudocode}
 
 
-\RequirePackage{graphics} % needed for \scalebox command
-\RequirePackage{xparse}   % needed for \call command
+\RequirePackage{graphics}
+\RequirePackage{xparse}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%
@@ -24,55 +24,68 @@
 %%%%%%%%%%%%%%%%%%%%%%%
 
 
-% Tiny space
-\newcommand{\tsp}{\hspace*{0.5pt}}
-
-% Force hyphens
-\newcommand{\text@hyphens}{\mathcode`\-=`\-\relax}
-
-% Command for typesetting constants: \const{true}, \const{nil}
+% Command for typesetting constants
+% Usage examples:
+%   \const{true}
+%   \const{nil}
 \newcommand{\const}[1]{\textnormal{\scshape#1}}
 
-% Command for typesetting identifiers: \id{key}, \id{left-sum}
-\newcommand{\id}[1]{\ensuremath{\mathit{\text@hyphens#1}}}
+% Command for typesetting variables
+% Usage examples:
+%   \var{key}
+%   \var{left-sum}
+%   \var{i}
+\newcommand{\var}[1]{\ensuremath{\mathit{\text@hyphens#1}}}
 
-% Command for typesetting procedures:
-% \proc{Insertion-Sort},
-% \proc{Dijkstra}{G, s},
-% \proc{Dijkstra}{G = graph, s = vertex}
-\NewDocumentCommand{\proc}{ m g } {\call{\textnormal{\scshape#1}}{#2}}
+% Command for typesetting finctions
+% Usage examples:
+%   \func{Insertion-Sort}
+%   \func{Dijkstra}{G, s}
+%   \func{Dijkstra}{G = graph, s = vertex}
+\NewDocumentCommand{\func}{m g} {\call{\textnormal{\scshape#1}}{#2}}
 
-% Command for typesetting fixed functions:
-% \func{sin}{x},
-% \func{out-degree}{G, v}
-\NewDocumentCommand{\func}{ m g } {
+% Command for typesetting fixed functions
+% Usage examples:
+%   \fixfunc{sin}{x}
+%   \fixfunc{out-degree}{G, v}
+\NewDocumentCommand{\fixfunc}{m g} {
     \call{\ensuremath{{\mathop{\text@hyphens\operator@font#1}\nolimits}}}{#2}
 }
 
-% Command for typesetting subarray ranges: $[1 \twodots n]$
+% Command for typesetting subarray ranges
+% Usage examples:
+%   [1 \twodots n]
 \newcommand{\twodots}{\mathinner{\ldotp\ldotp}}
 
-% Command for typesetting object attributes: \member{user}{name}
-\newcommand{\member}[2]{\id{#1}\ensuremath{\tsp . \tsp}\id{#2}}
+% Command for typesetting object attributes
+% Usage examples:
+%   \member{user}{name}
+\newcommand{\member}[2]{\var{#1}\ensuremath{\tsp . \tsp}\var{#2}}
 
-% Command for typesetting array elements: \at{names}{pos}
-\newcommand{\at}[2]{\ensuremath{\id{#1}\tsp[\id{#2}]}}
+% Command for typesetting array elements
+% Usage examples:
+%   \at{names}{pos}
+\newcommand{\at}[2]{\ensuremath{\var{#1}\tsp[\var{#2}]}}
 
-% Command for typesetting keywords: \kw{for}, \kw{if}
-\newcommand{\kw}[1]{\textbf{#1}}
+% Command for typesetting keywords
+% Usage examples:
+%   \keyword{for}
+%   \keyword{if}
+\newcommand{\keyword}[1]{\textbf{#1}}
 
-% Override the 'gets' symbol.
+% Uncomment to override the 'gets' symbol with an equals
 %\def\gets{\mathrel{\hspace{1pt}=\hspace{1pt}}}
 
+% Uncomment to provide symbol 'isequal' (==)
 %\newcommand{\isequal}{\mathrel{\scalebox{0.8}[1]{=}\hspace*{1pt}\scalebox{0.8}[1]{=}}}
 
 
-%%%%%%%%%%%%%%%%%%%%%%%
-% codebox environment %
-%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Pseudocode environment %
+%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-% When we make a codebox, we save the code part into a box before printing it.
+% When we make a pseudocode, we save the code part into a box before printing it.
 % We do not actually print the code until we know how many line numbers there
 % are.
 \newsavebox{\savecode}
@@ -90,11 +103,11 @@
 \newlength{\digitwidth}
 \settowidth{\digitwidth}{0}
 
-% Assume that the width of the codebox is the width of the text, minus the width
+% Assume that the width of the pseudocode is the width of the text, minus the width
 % of 2 digits.  We'll correct for that later.
-\newlength{\codeboxwidth}
-\setlength{\codeboxwidth}{\linewidth} % Thanks, David Etherington!
-\addtolength{\codeboxwidth}{-2\digitwidth}
+\newlength{\pseudocodewidth}
+\setlength{\pseudocodewidth}{\linewidth} % Thanks, David Etherington!
+\addtolength{\pseudocodewidth}{-2\digitwidth}
 
 % The codelinenumber counter counts the current line number.
 \newcounter{codelinenumber}
@@ -104,11 +117,11 @@
 
 % THC: This next command is magic to me.  I didn't write it.
 \def\@startline{\global\@curtabmar\@nxttabmar\relax
-   \global\@curtab\@curtabmar\setbox\@curline\hbox
+    \global\@curtab\@curtabmar\setbox\@curline\hbox
     {}\@startfield\strut}
 
-% The "codebox" environment produces an unbreakable section of code
-\newenvironment{codebox}{%
+% The "pseudocode" environment produces an unbreakable section of code
+\newenvironment{pseudocode}{%
     % this proc hasn't been given a name yet
     \global\procnamefalse%
     % producing the first line
@@ -118,21 +131,21 @@
     % distance between numbers and code
     \setlength{\tabbingsep}{1em}%
     % Initialize \@lilabel to allow a pageref \label cmd at the beginning of the
-    % codebox
+    % pseudocode
     \global\let\@lilabel\@currentlabel
     \def\@currentlabel{\@lilabel}%
     % save the code into a box
     \begin{lrbox}{\savecode}%
     % it'll be a minipage
-    \begin{minipage}[t]{\codeboxwidth}%
+    \begin{minipage}[t]{\pseudocodewidth}%
     % set up the tab stops
     \def\codeindent{\textbf{else} }%
     \begin{tabbing}%
     99\=\codeindent\=\codeindent\=\codeindent\=\codeindent\=\codeindent\=\codeindent\=\codeindent\=codeindent\=codeindent\=\+\kill%
 }{%
-    % Here's what's run at the end of a codebox environment.  Start by making
+    % Here's what's run at the end of a pseudocode environment.  Start by making
     % sure that we have ended at indent level 0.  Otherwise, print a warning.
-    \ifnum\value{indent}=0\else\typeout{Warning: Indentation ends at level \theindent\space in codebox on page \thepage.}\fi%
+    \ifnum\value{indent}=0\else\typeout{Warning: Indentation ends at level \theindent\space in pseudocode on page \thepage.}\fi%
     % close all open environments
     \end{tabbing}%
     \end{minipage}%
@@ -154,21 +167,21 @@
 }
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% codebox environment commands %
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Pseudocode environment commands %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 % Procedure name
 \NewDocumentCommand{\Procedure}{ m g } {%
-    \global\def\saveprocname{\proc{#1}{#2}}%
+    \global\def\saveprocname{\func{#1}{#2}}%
     \global\procnametrue%
 }
 
 
-%%%%%%%%%%%%%%%%%%%%%%%
-% codebox indentation %
-%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Pseudocode indentation %
+%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 % counter for recursive indenting code
@@ -245,7 +258,7 @@
 
 
 %%%%%%%%%%%%
-% keywords %
+% Keywords %
 %%%%%%%%%%%%
 
 
@@ -280,17 +293,19 @@
 %%%%%%%%%%%%%%%%%%%
 
 
+% Tiny space
+\newcommand{\tsp}{\hspace*{0.5pt}}
+
+% Force hyphens
+\newcommand{\text@hyphens}{\mathcode`\-=`\-\relax}
+
 % Is first call argument
 \newif\iffirstarg
 
-% Command for typesetting procedures/functions:
-% \call{Insertion-Sort},
-% \call{Dijkstra}{G, s},
-% \call{Dijkstra}{G = graph, s = vertex}
-\NewDocumentCommand{\call}{ m >{\SplitList{,}} g } {%
+% Command for typesetting functions
+\NewDocumentCommand{\call}{m >{\SplitList{,}} g} {%
     #1%
     \IfValueT{#2} {%
-%       Parse argument list
         \textrm{\tsp(%
             \global\firstargtrue%
             \ProcessList{#2}{\ParseArg}%
@@ -299,13 +314,13 @@
     }%
 }
 
-% Parse argument
-\NewDocumentCommand{\ParseArg}{ >{\SplitArgument{1}{=}} m } {\PrintArg#1}
+% Wrapper command for parsing function arguments
+\NewDocumentCommand{\ParseArg}{>{\SplitArgument{1}{=}} m} {\PrintArg#1}
 
-% Process argument
-\NewDocumentCommand{\PrintArg}{ m m } {%
+% Command for parsing function arguments
+\NewDocumentCommand{\PrintArg}{m m} {%
     \iffirstarg\global\firstargfalse\else{\textit{,\,}}\fi%
-    \id{#1}%
+    \var{#1}%
     \IfValueT{#2} {\textrm{\tsp :\ #2\tsp}}%
 }
 
