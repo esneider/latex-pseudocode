@@ -33,3 +33,5 @@
 Makefile
 *.tex
 *.swp
+*.pdf
+*.html

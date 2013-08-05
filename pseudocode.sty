@@ -24,27 +24,27 @@
 %%%%%%%%%%%%%%%%%%%%%%%
 
 
-% Command for typesetting constants.
+% Typesets constants.
 % Usage examples:
 %   \const{true}
 %   \const{nil}
 \newcommand{\const}[1]{\textnormal{\scshape#1}}
 
-% Command for typesetting variables.
+% Typesets variables.
 % Usage examples:
 %   \var{key}
 %   \var{left-sum}
 %   \var{i}
 \newcommand{\var}[1]{\ensuremath{\hspace*{-0.5pt}\mathit{\text@hyphens#1}}}
 
-% Command for typesetting functions.
+% Typesets functions.
 % Usage examples:
 %   \func{Insertion-Sort}{}
 %   \func{Dijkstra}{G, s}
 %   \func{Dijkstra}{G = graph, s = vertex}
 \NewDocumentCommand{\func}{m g} {\@@function{\textnormal{\scshape#1}}{#2}}
 
-% Command for typesetting fixed functions.
+% Typesets fixed functions.
 % Usage examples:
 %   \fixfunc{sin}{x}
 %   \fixfunc{out-degree}{G, v}
@@ -52,26 +52,58 @@
     \@@function{\ensuremath{{\mathop{\text@hyphens\operator@font#1}\nolimits}}}{#2}%
 }
 
-% Command for typesetting subarray ranges.
-% Usage examples:
-%   $[1 \twodots n]$
-\newcommand{\twodots}{\mathinner{\ldotp\ldotp}}
-
-% Command for typesetting object attributes.
+% Typesets object attributes.
 % Usage examples:
 %   \member{user}{name}
 \newcommand{\member}[2]{\var{#1}\ensuremath{.\@@tsp\@@tsp}\var{#2}}
 
-% Command for typesetting array elements.
+% Typesets array elements.
 % Usage examples:
 %   \at{names}{pos}
 \newcommand{\at}[2]{\ensuremath{\var{#1}\@@tsp[\@@surround{\var{#2}}]}}
 
-% Command for typesetting keywords.
+% Typesets keywords.
 % Usage examples:
 %   \keyword{for}
 %   \keyword{if}
 \newcommand{\kw}[1]{\textbf{#1}}
+
+% Symbol for typesetting subarray ranges.
+% Usage examples:
+%   $[1 \twodots n]$
+\newcommand{\twodots}{\mathinner{\ldotp\ldotp}}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Pseudocode2 environment %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\newif\if@@activepseudocode\@@activepseudocodefalse
+
+\newcounter{@@indentlevel}
+
+\NewDocumentEnvironment{pseudocode2}{o}
+{%
+    \if@@activepseudocode\PackageError{pseudocode}{Nested pseudocode environments not supported!}\fi%
+    \global\@@activepseudocodetrue%
+    \setcounter{@@indentlevel}{0}%
+    \newenvironment{block}{\addtocounter{@@indentlevel}{1}}{\addtocounter{@@indentlevel}{-1}}%
+    \addtolength{\topsep}{0.5ex}%
+    \def\@@indent{\textbf{else} }%
+    \begin{trivlist}%
+        \item\parindent=0pt%
+        \@nobreaktrue\IfValueT{#1}{#1\rule[-2ex]{0pt}{0pt}\\}%
+        \begin{minipage}[t]{1000pt}% TODO: fix this hardcoded size
+            \begin{tabbing}%
+                99\=\@@indent\=\@@indent\=\@@indent\=\@@indent\=\@@indent\=\@@indent\=\@@indent\=\@@indent\=\@@indent\=\+\kill%
+} {%
+            \end{tabbing}%
+        \end{minipage}%
+    \end{trivlist}%
+    \addtolength{\topsep}{-0.5ex}%
+    \global\@@activepseudocodefalse%
+}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -130,7 +162,7 @@
     % set up the tab stops
     \def\codeindent{\textbf{else} }%
     \begin{tabbing}%
-    99\=\codeindent\=\codeindent\=\codeindent\=\codeindent\=\codeindent\=\codeindent\=\codeindent\=codeindent\=codeindent\=\+\kill%
+    99\=\codeindent\=\codeindent\=\codeindent\=\codeindent\=\codeindent\=\codeindent\=\codeindent\=\codeindent\=\codeindent\=\+\kill%
 }{%
     % Here's what's run at the end of a pseudocode environment.  Start by making
     % sure that we have ended at indent level 0.  Otherwise, print a warning.
@@ -285,19 +317,19 @@
 % Tiny space.
 \newcommand{\@@tsp}{\hspace*{0.5pt}}
 
-% Force hyphens.
+% Forces hyphens.
 \newcommand{\text@hyphens}{\mathcode`\-=`\-\relax}
 
 
-%%%%%%%%%%%%%%%%%%%%
-% @@funcall helper %
-%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%
+% @@function helper %
+%%%%%%%%%%%%%%%%%%%%%
 
 
-% The \if@@firstarg command tells us if we are parsing the first call argument.
+% Tells if we are parsing the first function argument.
 \newif\if@@firstarg
 
-% Command for typesetting function calls/declarations.
+% Typesets function calls/declarations.
 \NewDocumentCommand{\@@function}{m >{\SplitList{,}} g} {%
     #1%
     \IfValueT{#2} {%
@@ -311,10 +343,10 @@
     }%
 }
 
-% Command for splitting a function argument.
+% Splits a function argument.
 \NewDocumentCommand{\@@parsearg}{>{\SplitArgument{1}{:}} m} {\@@printarg#1}
 
-% Command for parsing a function argument.
+% Parses a function argument.
 \NewDocumentCommand{\@@printarg}{m m} {%
     \if@@firstarg\global\@@firstargfalse\else{\textit{,\ }}\fi%
     \var{#1}%
@@ -327,14 +359,13 @@
 %%%%%%%%%%%%%%%%%%%%%
 
 
-% \@@paramlen holds the width of the text being surrounded.
+% Holds the width of the text being surrounded.
 \newlength{\@@paramlen}
 
-% \@@maxlen holds the maximum accepted length without spaces
-\newlength{\@@maxlen}
-\settowidth{\@@maxlen}{\var{W}}
+% Holds the maximum accepted length without spaces.
+\newlength{\@@maxlen}\settowidth{\@@maxlen}{\var{W}}
 
-% Command for surrounding text with spaces depending on its length.
+% Surrounds text with spaces depending on its length.
 \newcommand{\@@surround}[1]{%
     \settowidth{\@@paramlen}{\var{#1}}%
     \ifdim\@@paramlen>\@@maxlen\@@tsp\@@tsp\@@tsp\fi%
